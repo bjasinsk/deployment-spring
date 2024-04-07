@@ -1,12 +1,25 @@
-front_ip="20.215.193.129"
-username="azureUser"
-password="haslo1haslo1@"
+
+
+front_username="azureuser"
+front_password="Haslo1Haslo1"
+front_ip="20.107.240.28"
+front_port="4200"
+
+backend_username=""
+backend_password=""
+backend_ip="todo dla pawełka"
+backend_port="8080"
+
+database_username=""
+database_password=""
+database_ip=""
+database_port=""
+
 
 #source config.sh
 
-./run-front.sh "$password" "$username" "$front_ip"
+./run-front.sh "$front_password" "$front_username" "$front_ip" "$front_port" "$backend_ip" "$backend_port"
 
-sleep 5
 
 
 
