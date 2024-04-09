@@ -2,7 +2,7 @@
 
 front_username="azureuser"
 front_password="Haslo1Haslo1"
-front_ip="20.107.240.28"
+front_ip="4.231.232.138"
 front_port="4200"
 
 backend_username=""
