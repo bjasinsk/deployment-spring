@@ -6,18 +6,13 @@ sudo apt-get install wget -y
 
 INIT_DB_PATH="https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/initDB.sql"
 POPULATE_DB_PATH="https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/populateDB.sql"
-
 wget $INIT_DB_PATH
 wget $POPULATE_DB_PATH
 
-sudo sed -i "s/127.0.0.1/0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
-sudo sed -i "s/localhost/0.0.0.0/" ./initDB.sql
-
-
 sudo mysql <<EOF
 CREATE DATABASE petclinic;
-CREATE USER 'azureuser'@'localhost' IDENTIFIED BY 'Haslo1Haslo1@';
-GRANT ALL PRIVILEGES ON petclinic.* TO 'azureuser'@'localhost';
+CREATE USER 'pc'@'%' IDENTIFIED BY 'petclinic';
+GRANT ALL PRIVILEGES ON petclinic.* TO 'pc'@'%';
 FLUSH PRIVILEGES;
 EOF
 
