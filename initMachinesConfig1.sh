@@ -24,6 +24,8 @@ else
     az group create --name $RESOURCE_GROUP --location $LOCATION
 fi
 
+echo $USERNAME
+
 create_vm() {
     VM_NAME=$1
     VM_SIZE=$2
@@ -37,7 +39,7 @@ create_vm() {
         --resource-group $RESOURCE_GROUP \
         --name $VM_NAME \
         --size $VM_SIZE \
-        --image "Canonical:UbuntuServer:18_04-lts-gen2:latest" \
+        --image "Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest" \
         --admin-username $USERNAME \
         --admin-password $PASSWORD \
         --authentication-type password \
@@ -67,6 +69,7 @@ create_vm() {
         --access Allow \
         --direction Inbound
 }
+
 
 create_vm $FRONTEND_VM_NAME $FRONTEND_VM_SIZE $FRONTEND_PORT
 create_vm $BACKEND_VM_NAME $BACKEND_VM_SIZE $BACKEND_PORT
