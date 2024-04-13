@@ -10,6 +10,12 @@ BACKEND_VM_SIZE="Standard_B2s"
 DB_VM_SIZE="Standard_DS1_v2"
 USERNAME=$AZURE_VM_USERNAME
 PASSWORD=$AZURE_VM_PASSWORD
+FRONTEND_PORT=4200
+BACKEND_PORT=9966
+DB_PORT=3306
+SSH_PORT=22 
+
+echo "" > config.sh
 
 if az group show --name $RESOURCE_GROUP &> /dev/null; then
     echo "Grupa zasobów: '$RESOURCE_GROUP' już istnieje"
@@ -21,8 +27,13 @@ fi
 create_vm() {
     VM_NAME=$1
     VM_SIZE=$2
+    VM_PORT=$3
+    NSG_NAME="${VM_NAME}NSG"
+
+    az network nsg create --resource-group $RESOURCE_GROUP --name $NSG_NAME
+
     echo "Tworzenie VM: $VM_NAME o rozmiarze $VM_SIZE..."
-    az vm create \
+    VM_RESULT=$(az vm create \
         --resource-group $RESOURCE_GROUP \
         --name $VM_NAME \
         --size $VM_SIZE \
@@ -31,12 +42,35 @@ create_vm() {
         --admin-password $PASSWORD \
         --authentication-type password \
         --public-ip-address-dns-name "${VM_NAME}-$RANDOM" \
-        --nsg-rule SSH
+        --nsg $NSG_NAME \
+        --output json)
+
+    IP_ADDRESS=$(echo $VM_RESULT | jq -r '.publicIpAddress')
+    echo "export ${VM_NAME}_IP=$IP_ADDRESS" >> config.sh
+    echo "export ${VM_NAME}_PORT=$VM_PORT" >> config.sh
+
+    az network nsg rule create --resource-group $RESOURCE_GROUP \
+        --nsg-name $NSG_NAME \
+        --name "${VM_NAME}AllowSSH" \
+        --protocol tcp \
+        --priority 1000 \
+        --destination-port-ranges $SSH_PORT \
+        --access Allow \
+        --direction Inbound
+
+    az network nsg rule create --resource-group $RESOURCE_GROUP \
+        --nsg-name $NSG_NAME \
+        --name "${VM_NAME}Allow$VM_PORT" \
+        --protocol tcp \
+        --priority 1010 \
+        --destination-port-ranges $VM_PORT \
+        --access Allow \
+        --direction Inbound
 }
 
-create_vm $FRONTEND_VM_NAME $FRONTEND_VM_SIZE
-create_vm $BACKEND_VM_NAME $BACKEND_VM_SIZE
-create_vm $DB_VM_NAME $DB_VM_SIZE
+create_vm $FRONTEND_VM_NAME $FRONTEND_VM_SIZE $FRONTEND_PORT
+create_vm $BACKEND_VM_NAME $BACKEND_VM_SIZE $BACKEND_PORT
+create_vm $DB_VM_NAME $DB_VM_SIZE $DB_PORT
 
 echo "Adresy IP stworzonych maszyn wirtualnych:"
-az vm list-ip-addresses --resource-group $RESOURCE_GROUP --query "[].virtualMachine.network.publicIpAddresses[*].ipAddress" -o tsv
+cat config.sh
