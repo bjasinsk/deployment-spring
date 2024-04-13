@@ -1,25 +1,16 @@
+#!/bin/bash
 
+source config.sh
 
-front_username="azureuser"
-front_password="Haslo1Haslo1"
-front_ip="4.231.232.138"
-front_port="4200"
+front_username=$AZURE_VM_USERNAME
+front_password=$AZURE_VM_PASSWORD
 
-backend_username=""
-backend_password=""
-backend_ip="todo dla pawełka"
-backend_port="8080"
+# backend_username=$AZURE_VM_USERNAME
+# backend_password=$AZURE_VM_PASSWORD
 
-database_username=""
-database_password=""
-database_ip=""
-database_port=""
+# database_username=$AZURE_VM_USERNAME
+# database_password=$AZURE_VM_PASSWORD
 
-
-#source config.sh
-
-./run-front.sh "$front_password" "$front_username" "$front_ip" "$front_port" "$backend_ip" "$backend_port"
-
-
-
-
+./run-front.sh "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
+# ./run-backend.sh "$backend_password" "$backend_username" "$spring_IP" "$spring_PORT"
+# ./run-db.sh "$database_password" "$database_username" "$db_IP" "$db_PORT"
