@@ -68,6 +68,15 @@ create_vm() {
         --destination-port-ranges $VM_PORT \
         --access Allow \
         --direction Inbound
+
+    az network nsg rule create --resource-group $RESOURCE_GROUP \
+        --nsg-name $NSG_NAME \
+        --name "${VM_NAME}AllowOutbound$VM_PORT" \
+        --protocol tcp \
+        --priority 1100 \
+        --destination-port-ranges $VM_PORT \
+        --access Allow \
+        --direction Outbound
 }
 
 

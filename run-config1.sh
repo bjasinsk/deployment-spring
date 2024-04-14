@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo -v
 
 echo "Inicjalizacja maszyn wirtualnych..."
 ./initMachinesConfig1.sh

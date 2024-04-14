@@ -2,15 +2,32 @@
 
 source config.sh
 
+RESOURCE_GROUP="lab1Config1"
+FRONTEND_VM_NAME="angular"
+BACKEND_VM_NAME="spring"
+DB_VM_NAME="db"
+
 front_username=$AZURE_VM_USERNAME
 front_password=$AZURE_VM_PASSWORD
 
 backend_username=$AZURE_VM_USERNAME
 backend_password=$AZURE_VM_PASSWORD
 
-# database_username=$AZURE_VM_USERNAME
-# database_password=$AZURE_VM_PASSWORD
+database_username=$AZURE_VM_USERNAME
+database_password=$AZURE_VM_PASSWORD
+
+az vm run-command invoke \
+    --resource-group $RESOURCE_GROUP \
+    --name $DB_VM_NAME \
+    --command-id RunShellScript \
+    --scripts "@./db.sh"
+
+az vm run-command invoke \
+    --resource-group $RESOURCE_GROUP \
+    --name $BACKEND_VM_NAME \
+    --command-id RunShellScript \
+    --scripts "@./run-back.sh" \
+    --parameters "$db_IP" "$db_PORT"
 
 ./run-front.sh "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
-# ./run-back.sh "$backend_password" "$backend_username" "$spring_IP" "$spring_PORT" "$db_IP" "$db_PORT"
-# ./db.sh "$database_password" "$database_username" "$db_IP" "$db_PORT"
+

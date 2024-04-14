@@ -9,12 +9,11 @@ POPULATE_DB_PATH="https://raw.githubusercontent.com/spring-petclinic/spring-petc
 wget $INIT_DB_PATH
 wget $POPULATE_DB_PATH
 
-sudo mysql <<EOF
-CREATE DATABASE petclinic;
-CREATE USER 'pc'@'%' IDENTIFIED BY 'petclinic';
-GRANT ALL PRIVILEGES ON petclinic.* TO 'pc'@'%';
-FLUSH PRIVILEGES;
-EOF
+sudo mysql -v -e "CREATE DATABASE petclinic;"
+sudo mysql -v -e "CREATE USER 'pc'@'%' IDENTIFIED BY 'petclinic';"
+sudo mysql -v -e "GRANT ALL PRIVILEGES ON petclinic.* TO 'pc'@'%';"
+sudo mysql -v -e "FLUSH PRIVILEGES;"
+
 
 sed -i '7d' ./initDB.sql
 cat ./populateDB.sql >> ./initDB.sql

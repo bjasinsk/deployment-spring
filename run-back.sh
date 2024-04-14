@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DB_PORT="3306"
-DB_ADDRESS="20.93.18.81"
+DB_ADDRESS=$1
+DB_PORT=$2
 
 sudo apt-get update -y
 sudo apt install -y openjdk-17-jdk
@@ -12,4 +12,4 @@ cd spring-petclinic-rest
 sed -i "s/hsqldb/mysql/g" ./src/main/resources/application.properties
 sed -i "s/localhost:3306/$DB_ADDRESS:$DB_PORT/" src/main/resources/application-mysql.properties
 
-sudo ./mvnw spring-boot:run
+sudo ./mvnw spring-boot:run &
