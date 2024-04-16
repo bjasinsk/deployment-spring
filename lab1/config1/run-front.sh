@@ -26,5 +26,9 @@ ng build
 screen -dmS ng_serve_session bash -c ' echo "yes" |ng serve  --port $4'
 
 EOF
-
+# sed nie działa
+# export const environment = {
+#   production: true,
+#   REST_API_URL: 'http://:/petclinic/api/'
+# };
 
