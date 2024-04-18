@@ -1,0 +1,25 @@
+events {
+    
+}
+
+http {
+    upstream backend_get {
+        server ip_backend_get;
+    }
+
+    upstream backend_other {
+        server ip_backend_post;
+    }
+
+    server {
+        listen 80;
+
+        location /get {
+            proxy_pass http://backend_get;
+        }
+
+        location / {
+            proxy_pass http://backend_other;
+        }
+    }
+}

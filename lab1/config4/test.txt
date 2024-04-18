@@ -1,0 +1,5 @@
+4vmki
+front wysyła do balancera
+balancer wysyła do jednej maszyny z backendem na określony port
+oba backendy mają w konfifuracji ten sam adres, inne: nazwe bd, uzytkownika i port bazy danych
+bazy danych komunikują sie przez localhost na inny port
