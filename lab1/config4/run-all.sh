@@ -48,7 +48,7 @@ az vm run-command invoke \
     --resource-group $RESOURCE_GROUP \
     --name $BACKEND_POST_VM_NAME \
     --command-id RunShellScript \
-    --scripts "@./run-back-get.sh" \
+    --scripts "@./run-back-post.sh" \
     --parameters "$db_IP" "$db_PORT"
 
 sed -i "s/"ip_backend_get"/$backend_IP_get:$backend_port_get/g" default
