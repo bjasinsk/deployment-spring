@@ -7,6 +7,7 @@ FRONTEND_VM_NAME="angular"
 BALANCER_VM_NAME="balancer"
 BACKEND_GET_VM_NAME="spring_get"
 BACKEND_POST_VM_NAME="spring_post"
+DB_VM_NAME="db"
 DB_GET_VM_NAME="db_get"
 DB_POST_VM_NAME="db_post"
 
@@ -37,22 +38,30 @@ az vm run-command invoke \
     --command-id RunShellScript \
     --scripts "@./db.sh"
 
-az vm run-command invoke \
-    --resource-group $RESOURCE_GROUP \
-    --name $BACKEND_GET_VM_NAME \
-    --command-id RunShellScript \
-    --scripts "@./run-back-get.sh" \
-    --parameters "$db_IP" "$db_PORT"
+# az vm run-command invoke \
+#     --resource-group $RESOURCE_GROUP \
+#     --name $BACKEND_GET_VM_NAME \
+#     --command-id RunShellScript \
+#     --scripts "@./run-back-get.sh" \
+#     --parameters "$db_IP" "$db_PORT"
 
-az vm run-command invoke \
-    --resource-group $RESOURCE_GROUP \
-    --name $BACKEND_POST_VM_NAME \
-    --command-id RunShellScript \
-    --scripts "@./run-back-post.sh" \
-    --parameters "$db_IP" "$db_PORT"
+# az vm run-command invoke \
+#     --resource-group $RESOURCE_GROUP \
+#     --name $BACKEND_POST_VM_NAME \
+#     --command-id RunShellScript \
+#     --scripts "@./run-back-post.sh" \
+#     --parameters "$db_IP" "$db_PORT"
 
-sed -i "s/"ip_backend_get"/$backend_IP_get:$backend_port_get/g" default
-sed -i "s/"ip_backend_post"/$backend_IP_post:$backend_port_post/g" default
+# sed -i "s/"ip_backend_get"/$backend_IP_get:$backend_port_get/g" default
+# sed -i "s/"ip_backend_post"/$backend_IP_post:$backend_port_post/g" default
 
-./run-front.sh "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
+# az vm run-command invoke \
+#     --resource-group $RESOURCE_GROUP \
+#     --name $FRONTEND_VM_NAME \
+#     --command-id RunShellScript \
+#     --scripts "@./run-front.sh" \
+#     --parameters "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
+
+
+# ./run-front.sh "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
 
