@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RESOURCE_GROUP="lab1Config1"
+RESOURCE_GROUP="lab1Config9"
 
 GROUP_EXISTS=$(az group exists --name $RESOURCE_GROUP)
 echo "Status istnienia grupy zasobów '$RESOURCE_GROUP': $GROUP_EXISTS"

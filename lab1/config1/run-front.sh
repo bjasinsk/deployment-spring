@@ -1,6 +1,5 @@
-sudo apt-get install -y sshpass
-sshpass -p "$1" ssh -t -f -L "$4":localhost:"$4" "$2@$3"
-sshpass -p "$1" ssh -o StrictHostKeyChecking=no "$2@$3" << 'EOF'
+BACK_ADDRESS=$1
+BACK_PORT=$2
 
 sudo apt update --assume-no
 sudo apt install nodejs -y
@@ -15,20 +14,15 @@ nvm use 18.13
 git clone https://github.com/spring-petclinic/spring-petclinic-angular
 cd spring-petclinic-angular
 
-sed -i "s/localhost/$5/g" src/environments/environment.ts src/environments/environment.prod.ts
-sed -i "s/9966/$6/g" src/environments/environment.ts src/environments/environment.prod.ts
+sed -i "s/localhost/$BACK_ADDRESS/g" src/environments/environment.ts src/environments/environment.prod.ts
+sed -i "s/9966/$BACK_PORT/g" src/environments/environment.ts src/environments/environment.prod.ts
+
+cat src/environments/environment.ts
 
 npm uninstall -g angular-cli @angular/cli
 echo "no" |npm install -g @angular/cli@latest
 npm install
 
 ng build
-screen -dmS ng_serve_session bash -c ' echo "yes" |ng serve  --port $4'
-
-EOF
-# sed nie działa
-# export const environment = {
-#   production: true,
-#   REST_API_URL: 'http://:/petclinic/api/'
-# };
+ng serve &
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RESOURCE_GROUP="lab1Config1"
+RESOURCE_GROUP="lab1Config9"
 LOCATION="polandcentral"
 FRONTEND_VM_NAME="angular"
 BACKEND_VM_NAME="spring"
@@ -62,21 +62,23 @@ create_vm() {
 
     az network nsg rule create --resource-group $RESOURCE_GROUP \
         --nsg-name $NSG_NAME \
-        --name "${VM_NAME}Allow$VM_PORT" \
-        --protocol tcp \
-        --priority 1010 \
-        --destination-port-ranges $VM_PORT \
+        --name "${VM_NAME}AllowAllInbound" \
+        --priority 900 \
         --access Allow \
-        --direction Inbound
+        --direction Inbound \
+        --protocol '*' \
+        --destination-port-ranges '*' \
+        --source-port-ranges '*'
 
     az network nsg rule create --resource-group $RESOURCE_GROUP \
         --nsg-name $NSG_NAME \
-        --name "${VM_NAME}AllowOutbound$VM_PORT" \
-        --protocol tcp \
-        --priority 1100 \
-        --destination-port-ranges $VM_PORT \
+        --name "${VM_NAME}AllowAllOutbound" \
+        --priority 900 \
         --access Allow \
-        --direction Outbound
+        --direction Outbound \
+        --protocol '*' \
+        --destination-port-ranges '*' \
+        --source-port-ranges '*'
 }
 
 

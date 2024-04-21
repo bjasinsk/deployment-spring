@@ -11,5 +11,6 @@ cd spring-petclinic-rest
 
 sed -i "s/hsqldb/mysql/g" ./src/main/resources/application.properties
 sed -i "s/localhost:3306/$DB_ADDRESS:$DB_PORT/" src/main/resources/application-mysql.properties
+cat src/main/resources/application-mysql.properties
 
 sudo ./mvnw spring-boot:run &

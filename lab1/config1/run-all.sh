@@ -2,7 +2,7 @@
 
 source config.sh
 
-RESOURCE_GROUP="lab1Config1"
+RESOURCE_GROUP="lab1Config9"
 FRONTEND_VM_NAME="angular"
 BACKEND_VM_NAME="spring"
 DB_VM_NAME="db"
@@ -29,5 +29,10 @@ az vm run-command invoke \
     --scripts "@./run-back.sh" \
     --parameters "$db_IP" "$db_PORT"
 
-./run-front.sh "$front_password" "$front_username" "$angular_IP" "$angular_PORT" "$spring_IP" "$spring_PORT"
+az vm run-command invoke \
+    --resource-group $RESOURCE_GROUP \
+    --name $FRONTEND_VM_NAME \
+    --command-id RunShellScript \
+    --scripts "@./run-front.sh" \
+    --parameters "$spring_IP" "$spring_PORT"
 
