@@ -11,7 +11,7 @@
                     "source_address_prefix": "*",
                     "source_port_range": "*",
                     "destination_address_prefix": "*",
-                    "destination_port_range": "8080-8081"
+                    "destination_port_range": "*"
                 },
                 {
                     "name": "frontendSSH",
@@ -27,14 +27,6 @@
             "name": "backendNSG",
             "rule": [
                 {
-                    "name": "backendRule",
-                    "priority": 1000,
-                    "source_address_prefix": "10.0.0.0/16",
-                    "source_port_range": "*",
-                    "destination_address_prefix": "*",
-                    "destination_port_range": "8080-8081"
-                },
-                {
                     "name": "backendSSH",
                     "priority": 1010,
                     "source_address_prefix": "*",
@@ -47,6 +39,14 @@
         {
             "name": "databaseNSG",
             "rule": [
+                {
+                    "name": "backendRule",
+                    "priority": 900,
+                    "source_address_prefix": "*",
+                    "source_port_range": "*",
+                    "destination_address_prefix": "*",
+                    "destination_port_range": "*"
+                },
                 {
                     "name": "databaseRule",
                     "priority": 1000,
@@ -71,11 +71,6 @@
             "name": "frontendSubnet",
             "address_prefix": "10.0.1.0/24",
             "network_security_group": "frontendNSG"
-        },
-        {
-            "name": "backendSubnet",
-            "address_prefix": "10.0.3.0/24",
-            "network_security_group": "backendNSG"
         },
         {
             "name": "databaseSubnet",
@@ -104,8 +99,8 @@
                 {
                     "type": "database",
                     "port": 3306,
-                    "user": "user",
-                    "password": "password"
+                    "user": "pc",
+                    "password": "petclinic"
                 }
             ]
         },
@@ -118,8 +113,8 @@
                 {
                     "type": "database-slave",
                     "port": 3306,
-                    "user": "user",
-                    "password": "password",
+                    "user": "pc",
+                    "password": "petclinic",
                     "master_address": "10.0.4.8",
                     "master_port": 3306
                 }
@@ -127,16 +122,18 @@
         },
         {
             "name": "backend1VM",
-            "subnet": "backendSubnet",
-            "private_ip_address": "10.0.3.7",
+            "subnet": "databaseSubnet",
+            "private_ip_address": "10.0.4.7",
             "public_ip_address": "back",
             "deploy": [
                 {
-                    "type": "database",
+                    "type": "backend",
                     "database_ip_master": "10.0.4.8",
                     "database_port_master": 3306,
                     "database_ip_slave": "10.0.4.9",
-                    "database_port_slave": 3306
+                    "database_port_slave": 3306,
+                    "backend_master_port": 8080,
+                    "backend_slave_port": 8081
                 }
             ]
         },
@@ -149,14 +146,14 @@
                 {
                     "type": "nginx-balancer",
                     "port": 8080,
-                    "server_name": "backend",
-                    "backend_port_master": 3306,
-                    "backend_port_slave": 3306
+                    "server_name": "back",
+                    "backend_port_master": 8080,
+                    "backend_port_slave": 8081
                 },
                 {
                     "type": "frontend",
                     "nginx_port": 8080,
-                    "nginx_address": "127.0.0.1"
+                    "nginx_address": "localhost"
                 }
             ]
         }

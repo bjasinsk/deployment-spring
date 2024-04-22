@@ -2,11 +2,8 @@
 
 az account show -o none
 
-#resource group
-
 RESOURCE_GROUP="$(jq -r '.resource_group' ./config.json)"
 
-#login and password
 USERNAME=$AZURE_VM_USERNAME
 PASSWORD=$AZURE_VM_PASSWORD
 
@@ -14,15 +11,12 @@ echo $RESOURCE_GROUP
 
 az group create --name $RESOURCE_GROUP --location westeurope
 
-#network
 NETWORK_ADDRESS_PREFIX="$(jq -r '.network_address_prefix' ./config.json)"
 
 az network vnet create\
     --name VNet \
     --resource-group $RESOURCE_GROUP \
     --address-prefix $NETWORK_ADDRESS_PREFIX
-
-#network security group
 
 readarray -t NETWORK_SECURITY_GROUPS < <(jq -c '.network_security_group[]' "./config.json")
 
@@ -50,21 +44,33 @@ for NGS in ${NETWORK_SECURITY_GROUPS[@]}; do
 
 
         az network nsg rule create \
-            --name $RULE_NAME \
+            --name "$RULE_NAME"IN \
             --nsg-name $NGS_NAME \
             --priority $RULE_PRIORITY \
             --resource-group $RESOURCE_GROUP \
             --access Allow \
             --destination-address-prefixes "$RULE_DESTINATION_ADDRESS_PREFIX" \
             --destination-port-ranges "$RULE_DESTINATION_PORT_RANGE" \
-            --protocol Tcp \
+            --protocol "*" \
             --source-address-prefixes "$RULE_SOURCE_ADDRESS_PREFIX" \
-            --source-port-ranges "$RULE_SOURCE_PORT_RANGE"
+            --source-port-ranges "$RULE_SOURCE_PORT_RANGE" \
+            --direction Inbound
+
+        az network nsg rule create \
+            --name "$RULE_NAME"OUT \
+            --nsg-name $NGS_NAME \
+            --priority $RULE_PRIORITY \
+            --resource-group $RESOURCE_GROUP \
+            --access Allow \
+            --destination-address-prefixes "$RULE_DESTINATION_ADDRESS_PREFIX" \
+            --destination-port-ranges "$RULE_DESTINATION_PORT_RANGE" \
+            --protocol "*" \
+            --source-address-prefixes "$RULE_SOURCE_ADDRESS_PREFIX" \
+            --source-port-ranges "$RULE_SOURCE_PORT_RANGE" \
+            --direction Outbound
     done
 
 done
-
-#subnet
 
 readarray -t SUBNETS < <(jq -c '.subnet[]' "./config.json")
 for SUBNET in ${SUBNETS[@]}; do
@@ -74,7 +80,6 @@ for SUBNET in ${SUBNETS[@]}; do
     SUBNET_ADDRESS_PREFIX=$(jq -r ".address_prefix" <<< $SUBNET)
     SUBNET_NSG=$(jq -r ".network_security_group" <<< $SUBNET)
 
-
     az network vnet subnet create \
         --name $SUBNET_NAME\
         --resource-group $RESOURCE_GROUP \
@@ -83,7 +88,6 @@ for SUBNET in ${SUBNETS[@]}; do
         --network-security-group "$SUBNET_NSG"
 done
 
-# public IP
 readarray -t PUBLIC_IPS < <(jq -c '.public_ip[]' "./config.json")
 
 for PUBLIC_IP in "${PUBLIC_IPS[@]}"; do
@@ -134,27 +138,29 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
                 NGINX_ADDR=$(jq -r '.nginx_address' <<< $SERVICE)
                 NGINX_PORT=$(jq -r '.nginx_port' <<< $SERVICE)
 
-                # az vm run-command invoke \
-                #     --resource-group $RESOURCE_GROUP \
-                #     --name $VM_NAME \
-                #     --command-id RunShellScript \
-                #     --scripts "@./frontend.sh" \
-                #     --parameters "$NGINX_ADDR" "$NGINX_PORT"
+                az vm run-command invoke \
+                    --resource-group $RESOURCE_GROUP \
+                    --name $VM_NAME \
+                    --command-id RunShellScript \
+                    --scripts "@./frontend.sh" \
+                    --parameters "$NGINX_ADDR" "$NGINX_PORT"
             ;;
 
             backend)
                 echo Setting up backend
                 DATABASE_ADDR_M=$(jq -r '.database_ip_master' <<< $SERVICE)
-                DATABASE_ADDR_S=$(jq -r '.database_ip_slave' <<< $SERVICE)
+                DATABASE_ADDR_S=$(jq -r '.database_ip_slave' <<< $SERVICE)                
                 DATABASE_PORT_M=$(jq -r '.database_port_master' <<< $SERVICE)
                 DATABASE_PORT_S=$(jq -r '.database_port_slave' <<< $SERVICE)
+                BACKEND_MASTER_PORT=$(jq -r '.backend_master_port' <<< $SERVICE)
+                BACKEND_SLAVE_PORT=$(jq -r '.backend_slave_port' <<< $SERVICE)
 
-                # az vm run-command invoke \
-                #     --resource-group $RESOURCE_GROUP \
-                #     --name $VM_NAME \
-                #     --command-id RunShellScript \
-                #     --scripts "@./backend.sh" \
-                #     --parameters "$DATABASE_ADDR_M" "$DATABASE_PORT_M" "$DATABASE_ADDR_S" "$DATABASE_PORT_S"
+                az vm run-command invoke \
+                    --resource-group $RESOURCE_GROUP \
+                    --name $VM_NAME \
+                    --command-id RunShellScript \
+                    --scripts "@./backend.sh" \
+                    --parameters "$DATABASE_ADDR_M" "$DATABASE_PORT_M" "$BACKEND_MASTER_PORT" "$DATABASE_ADDR_S" "$DATABASE_PORT_S" "$BACKEND_SLAVE_PORT"
             ;;
             database)
                 echo Setting up database
@@ -194,12 +200,12 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
                 BACKEND_READ_PORT=$(jq -r '.backend_port_slave' <<< $SERVICE)
                 PORT=$(jq -r '.port' <<< $SERVICE)
 
-                # az vm run-command invoke \
-                #     --resource-group $RESOURCE_GROUP \
-                #     --name $VM_NAME \
-                #     --command-id RunShellScript \
-                #     --scripts "@./balancer.sh" \
-                #     --parameters "$PORT" "$SERVER_IP" "$BACKEND_WRITE_PORT" "$SERVER_IP" "$BACKEND_READ_PORT"
+                az vm run-command invoke \
+                    --resource-group $RESOURCE_GROUP \
+                    --name $VM_NAME \
+                    --command-id RunShellScript \
+                    --scripts "@./balancer.sh" \
+                    --parameters "$PORT" "$SERVER_IP" "$BACKEND_WRITE_PORT" "$SERVER_IP" "$BACKEND_READ_PORT"
             ;;
 
 
