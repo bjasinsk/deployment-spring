@@ -14,14 +14,13 @@ sudo mysql -v -e "CREATE USER 'pc'@'%' IDENTIFIED BY 'petclinic';"
 sudo mysql -v -e "GRANT ALL PRIVILEGES ON petclinic.* TO 'pc'@'%';"
 sudo mysql -v -e "FLUSH PRIVILEGES;"
 
-
+sudo sed 's/\(^bind-address\s*=\).*$/\1 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf -i
+sudo sed 's/\(^mysqlx-bind-address\s*=\).*$/\1 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf -i
 sed -i '7d' ./initDB.sql
 cat ./populateDB.sql >> ./initDB.sql
 sudo mysql < ./initDB.sql
-
+sudo mysql -v -e "UNLOCK TABLES;"
 
 sudo service mysql restart
-
-sudo mysql -v -e "UNLOCK TABLES;"
 
 echo "Finished database setup"
