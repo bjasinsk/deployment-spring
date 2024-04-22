@@ -162,12 +162,12 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
                 DATABASE_USER=$(jq -r '.user' <<< $SERVICE)
                 DATABASE_PASSWORD=$(jq -r '.password' <<< $SERVICE)
 
-                # az vm run-command invoke \
-                #     --resource-group $RESOURCE_GROUP \
-                #     --name $VM_NAME \
-                #     --command-id RunShellScript \
-                #     --scripts "@./scripts/mysql/database.sh" \
-                #     --parameters "$SERVICE_PORT" "$DATABASE_USER" "$DATABASE_PASSWORD"
+                az vm run-command invoke \
+                    --resource-group $RESOURCE_GROUP \
+                    --name $VM_NAME \
+                    --command-id RunShellScript \
+                    --scripts "@./db_master.sh" \
+                    --parameters "$SERVICE_PORT" "$DATABASE_USER" "$DATABASE_PASSWORD"
             ;;
 
             database-slave)
@@ -178,12 +178,12 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
                 MASTER_DATABASE_ADDRESS=$(jq -r '.master_address' <<< $SERVICE)
                 MASTER_DATABASE_PORT=$(jq -r '.master_port' <<< $SERVICE)
 
-            #     az vm run-command invoke \
-            #         --resource-group $RESOURCE_GROUP \
-            #         --name $VM_NAME \
-            #         --command-id RunShellScript \
-            #         --scripts "@./scripts/mysql/database-slave.sh" \
-            #         --parameters "$SERVICE_PORT" "$DATABASE_USER" "$DATABASE_PASSWORD" "$MASTER_DATABASE_ADDRESS" "$MASTER_DATABASE_PORT"
+                az vm run-command invoke \
+                    --resource-group $RESOURCE_GROUP \
+                    --name $VM_NAME \
+                    --command-id RunShellScript \
+                    --scripts "@./db_slave.sh" \
+                    --parameters "$SERVICE_PORT" "$DATABASE_USER" "$DATABASE_PASSWORD" "$MASTER_DATABASE_ADDRESS" "$MASTER_DATABASE_PORT"
             ;;
 
             nginx-balancer)
