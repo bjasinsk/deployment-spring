@@ -6,6 +6,7 @@ DB_PORT=$2
 sudo apt-get update -y
 sudo apt install -y openjdk-17-jdk
 
+cd /
 git clone https://github.com/spring-petclinic/spring-petclinic-rest.git
 cd spring-petclinic-rest
 

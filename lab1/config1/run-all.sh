@@ -34,5 +34,5 @@ az vm run-command invoke \
     --name $FRONTEND_VM_NAME \
     --command-id RunShellScript \
     --scripts "@./run-front.sh" \
-    --parameters "$spring_IP" "$spring_PORT"
+    --parameters "$spring_IP" "$spring_PORT" "$angular_PORT"
 
