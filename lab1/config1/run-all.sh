@@ -27,7 +27,7 @@ az vm run-command invoke \
     --name $BACKEND_VM_NAME \
     --command-id RunShellScript \
     --scripts "@./run-back.sh" \
-    --parameters "$db_IP" "$db_PORT"
+    --parameters "$db_PRIVATE_IP" "$db_PORT"
 
 az vm run-command invoke \
     --resource-group $RESOURCE_GROUP \
