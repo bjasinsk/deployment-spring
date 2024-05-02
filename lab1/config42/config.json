@@ -127,6 +127,13 @@
             "public_ip_address": "back",
             "deploy": [
                 {
+                    "type": "nginx-balancer",
+                    "port": 9966,
+                    "server_name": "127.0.0.1",
+                    "backend_port_master": 8080,
+                    "backend_port_slave": 8081
+                },
+                {
                     "type": "backend",
                     "database_ip_master": "10.0.4.8",
                     "database_port_master": 3306,
@@ -144,16 +151,10 @@
             "public_ip_address": "front",
             "deploy": [
                 {
-                    "type": "nginx-balancer",
-                    "port": 8080,
-                    "server_name": "back",
-                    "backend_port_master": 8080,
-                    "backend_port_slave": 8081
-                },
-                {
                     "type": "frontend",
-                    "nginx_port": 8080,
-                    "nginx_address": "localhost"
+                    "nginx_port": 9966,
+                    "nginx_address": "back",
+                    "front_port": 4200
                 }
             ]
         }

@@ -135,21 +135,23 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
             frontend)
                 echo Setting up frontend
 
-                NGINX_ADDR=$(jq -r '.nginx_address' <<< $SERVICE)
+                SERVER_NAME=$(jq -r '.nginx_address' <<< $SERVICE)
+                NGINX_ADDR=$(az network public-ip show --resource-group "$RESOURCE_GROUP"  --name "$SERVER_NAME"  --query "ipAddress" --output tsv)
                 NGINX_PORT=$(jq -r '.nginx_port' <<< $SERVICE)
+                FRONT_PORT=$(jq -r '.front_port' <<< $SERVICE)
 
                 az vm run-command invoke \
                     --resource-group $RESOURCE_GROUP \
                     --name $VM_NAME \
                     --command-id RunShellScript \
                     --scripts "@./frontend.sh" \
-                    --parameters "$NGINX_ADDR" "$NGINX_PORT"
+                    --parameters "$NGINX_ADDR" "$NGINX_PORT" "$FRONT_PORT"
             ;;
 
             backend)
                 echo Setting up backend
                 DATABASE_ADDR_M=$(jq -r '.database_ip_master' <<< $SERVICE)
-                DATABASE_ADDR_S=$(jq -r '.database_ip_slave' <<< $SERVICE)                
+                DATABASE_ADDR_S=$(jq -r '.database_ip_slave' <<< $SERVICE)
                 DATABASE_PORT_M=$(jq -r '.database_port_master' <<< $SERVICE)
                 DATABASE_PORT_S=$(jq -r '.database_port_slave' <<< $SERVICE)
                 BACKEND_MASTER_PORT=$(jq -r '.backend_master_port' <<< $SERVICE)
@@ -194,8 +196,7 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
 
             nginx-balancer)
                 echo Setting up nginx
-                SERVER_NAME=$(jq -r '.server_name' <<< $SERVICE)
-                SERVER_IP=$(az network public-ip show --resource-group "$RESOURCE_GROUP"  --name "$SERVER_NAME"  --query "ipAddress" --output tsv)
+                SERVER_ADDR=$(jq -r '.server_name' <<< $SERVICE)
                 BACKEND_WRITE_PORT=$(jq -r '.backend_port_master' <<< $SERVICE)
                 BACKEND_READ_PORT=$(jq -r '.backend_port_slave' <<< $SERVICE)
                 PORT=$(jq -r '.port' <<< $SERVICE)
@@ -205,7 +206,7 @@ for VM in "${VIRTUAL_MACHINES[@]}"; do
                     --name $VM_NAME \
                     --command-id RunShellScript \
                     --scripts "@./balancer.sh" \
-                    --parameters "$PORT" "$SERVER_IP" "$BACKEND_WRITE_PORT" "$SERVER_IP" "$BACKEND_READ_PORT"
+                    --parameters "$PORT" "$SERVER_ADDR" "$BACKEND_WRITE_PORT" "$SERVER_ADDR" "$BACKEND_READ_PORT"
             ;;
 
 
