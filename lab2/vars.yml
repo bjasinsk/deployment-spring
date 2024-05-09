@@ -1,0 +1,22 @@
+resource_group: "lab2Config1"
+location: "polandcentral"
+frontend_vm_name: "angular"
+backend_vm_name: "spring"
+db_vm_name: "db"
+frontend_vm_size: "Standard_B2s"
+backend_vm_size: "Standard_B2s"
+db_vm_size: "Standard_DS1_v2"
+username: "{{ azure_vm_username }}"
+password: "{{ azure_vm_password }}"
+frontend_port: 4200
+frontend_private_ip: "10.0.4.7"
+backend_port: 9966
+backend_private_ip: "10.0.4.8"
+db_port: 3306
+db_private_ip: "10.0.4.9"
+ssh_port: 22
+network_addr_prefix: "10.0.0.0/16"
+network_name: VNet
+subnet_prefix: "10.0.4.0/24"
+subnet_name: Subnet_lab2
+nsg_name: "NSGLAB2"
