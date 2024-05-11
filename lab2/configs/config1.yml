@@ -1,0 +1,38 @@
+all:
+  hosts:
+    frontend_host:
+      vm_name: front
+      ansible_user: azureuser
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_host: 20.214.200.160
+
+    backend_host:
+      vm_name: back
+      ansible_user: azureuser
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_host: 20.214.205.8
+
+    db_host:
+      vm_name: database
+      ansible_user: azureuser
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_host: 20.231.26.239
+
+
+  children:
+    frontend:
+      hosts:
+        frontend_host:
+          backend_private_ip: "10.0.4.8"
+          backend_port: 9966
+          frontend_port: 4200
+    backend:
+      hosts:
+        backend_host:
+            backend_port: 9966
+            db_private_ip: "10.0.4.9"
+            db_port: 3306
+    database:
+      hosts:
+        db_host:
+          db_port: 3306
