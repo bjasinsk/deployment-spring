@@ -1,0 +1,38 @@
+- name: Create NSG
+  azure_rm_securitygroup:
+    resource_group: "{{ resource_group }}"
+    name: "{{ nsg_name }}"
+    rules:
+      - name: "{{ vm_name }}AllowSSH"
+        protocol: Tcp
+        priority: 1000
+        destination_port_range: "{{ ssh_port }}"
+        access: Allow
+        direction: Inbound
+      - name: "{{ vm_name }}AllowAllInbound"
+        protocol: "*"
+        priority: 900
+        destination_port_range: "*"
+        access: Allow
+        direction: Inbound
+      - name: "{{ vm_name }}AllowAllOutbound"
+        protocol: "*"
+        priority: 800
+        destination_port_range: "*"
+        access: Allow
+        direction: Outbound
+
+- name: Create virtual machine
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ resource_group }}"
+    name: "{{ vm_name }}"
+    vm_size: "{{ vm_size }}"
+    admin_username: "{{ username }}"
+    admin_password: "{{ password }}"
+    managed_disk_type: "{{ disk_type }}"
+    public_ip_allocation_metod: "{{ public_ip_allocate }}"
+    image:
+      offer: 0001-com-ubuntu-server-jammy
+      publisher: Canonical
+      sku: 22_04-lts-gen2
+      version: latest

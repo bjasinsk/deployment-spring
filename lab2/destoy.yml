@@ -1,0 +1,24 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Deallocate and Delete Virtual Machines
+      azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ db_vm_name }}"
+        - "{{ frontend_vm_name }}"
+        - "{{ backend_vm_name }}"
+
+    - name: Delete Virtual Network
+      azure_rm_virtualnetwork:
+        resource_group: "{{ resource_group }}"
+        name: "{{ vnet_name }}"
+        state: absent
+
+    - name: Delete Resource Group
+      azure_rm_resourcegroup:
+        name: "{{ resource_group }}"
+        state: absent
+        force_delete_nonempty: yes
