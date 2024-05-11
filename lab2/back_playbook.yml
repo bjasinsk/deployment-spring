@@ -2,6 +2,8 @@
 - name: Install necessary packages and clone the repository
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars.yml
   tasks:
     - name: Update apt packages
       apt:
@@ -21,6 +23,8 @@
 - name: Modify application properties
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars.yml
   tasks:
     - name: Replace HSQLDB with MySQL
       replace:
@@ -37,6 +41,8 @@
 - name: Run the application
   hosts: localhost
   gather_facts: false
+  vars_files:
+    - vars.yml
   tasks:
     - name: Run Spring Boot application
       command: /spring-petclinic-rest/mvnw spring-boot:run &
