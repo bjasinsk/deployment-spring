@@ -1,6 +1,12 @@
 #!/bin/bash
 
-source config.sh
+sudo apt update
+sudo apt install python3-pip -y
+pip install ansible azure-mgmt-resource msrest msrestazure azure-common --upgrade
+ansible-galaxy collection install azure.azcollection --upgrade
+pip install --upgrade jinja2
+
+# source config.sh
 
 RESOURCE_GROUP="lab2Config1"
 FRONTEND_VM_NAME="angular"
@@ -16,10 +22,26 @@ backend_password=$AZURE_VM_PASSWORD
 database_username=$AZURE_VM_USERNAME
 database_password=$AZURE_VM_PASSWORD
 
-pip install --deps ansible
-ansible-galaxy collection install azure.azcollection
+# pip install --deps ansible
+# ansible-galaxy collection install azure.azcollection
+pip install azure-cli==2.60.0
+pip install azure-mgmt-resource==23.1.0b2
+pip install azure-mgmt-automation
+# pip install 'ansible[azure]'
+pip install azure-mgmt-network
+pip install azure-storage-blob
 
 
-ansible-playbook vars.yml --extra-vars  "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+# pip install azure-mgmt
 
-ansible-playbook create_all_vms.yml
+
+pip install --upgrade ansible
+ansible-galaxy collection install azure.azcollection --force
+ansible-galaxy collection install azure.azcollection --upgrade
+
+
+# pliku vars.yml nie odpala się jako playbook chyba albo nie umiem tego odpalić tak 
+# ansible-playbook vars.yml --extra-vars  "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+
+#ansible-playbook create_all_vms.yml
+ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"

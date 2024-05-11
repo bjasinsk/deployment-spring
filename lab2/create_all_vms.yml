@@ -2,13 +2,17 @@
 - name: Create Azure VMs
   hosts: localhost
   connection: local
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - vars.yml
   tasks:
     - name: Create resource group
       azure_rm_resourcegroup:
         name: "{{ resource_group }}"
         location: "{{ location }}"
 
-    - name: Crate virtual network:
+    - name: Crate virtual network
       azure_rm_virtualnetwork:
         resource_group: "{{ resource_group }}"
         name: "{{ vnet_name }}"
@@ -21,21 +25,21 @@
         virtual_network_name: "{{ vnet_name }}"
         address_prefix: "{{ subnet_prefix }}"
 
-    - import_tasks_from: create_vm.yml
+    - import_tasks: create_vm.yml
       vars:
         vm_name: "{{db_vm_name}}"
         vm_size: "{{db_vm_size}}"
         vm_port: "{{db_port}}"
         vm_private_ip: "{{db_private_ip}}"
 
-    - import_tasks_from: create_vm.yml
+    - import_tasks: create_vm.yml
       vars:
         vm_name: "{{frontend_vm_name}}"
         vm_size: "{{frontend_vm_size}}"
         vm_port: "{{frontend_port}}"
         vm_private_ip: "{{frontend_private_ip}}"
 
-    - import_tasks_from: create_vm.yml
+    - import_tasks: create_vm.yml
       vars:
         vm_name: "{{backend_vm_name}}"
         vm_size: "{{backend_vm_size}}"
@@ -43,4 +47,3 @@
         vm_private_ip: "{{backend_private_ip}}"
 
     # tasks for deallocate and poweroff resource group
-    

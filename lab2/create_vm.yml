@@ -1,45 +1,42 @@
+- name: Create public IP address
+  azure_rm_publicipaddress:
+    resource_group: "{{ resource_group }}"
+    allocation_method: Static
+    name: "{{ vm_name }}PublicIP"
 
-    - name: Create public IP address
-      azure_rm_publicipaddress:
-        resource_group: "{{ resource_group }}"
-        allocation_method: Static
-        name: "{{ vm_name }}"PublicIP # randomized
-    - name: Create AllowSSH NSG
-      azure_rm_securitygroup:
-        resource_group: "{{ resource_group }}"
-        name: "{{ nsg_name }}"
-        rules:
-          - name: "{{vm_name}}"AllowSSH
-            protocol: Tcp
-            priority: 1000
-            destination_port_range: "{{ ssh_port }}"
-            access: Allow
-            direction: Inbound
-          - name: "{{vm_name}}"AllowAllInbound
-            protocol: '*'
-            priority: 900
-            destination_port_range: '*'
-            access: Allow
-            direction: Inbound
-          - name: "{{vm_name}}"AllowAllOutbound
-            protocol: '*'
-            priority: 900
-            destination_port_range: '*'
-            access: Allow
-            direction: Outbound
+- name: Create AllowSSH NSG
+  azure_rm_securitygroup:
+    resource_group: "{{ resource_group }}"
+    name: "{{ nsg_name }}"
+    rules:
+      - name: "{{ vm_name }}AllowSSH"
+        protocol: Tcp
+        priority: 1000
+        destination_port_range: "{{ ssh_port }}"
+        access: Allow
+        direction: Inbound
+      - name: "{{ vm_name }}AllowAllInbound"
+        protocol: "*"
+        priority: 900
+        destination_port_range: "*"
+        access: Allow
+        direction: Inbound
+      - name: "{{ vm_name }}AllowAllOutbound"
+        protocol: "*"
+        priority: 900
+        destination_port_range: "*"
+        access: Allow
+        direction: Outbound
 
-    - name: Create virtual machine
-      azure.azcollection.azure_rm_virtualmachine:
-        resource_group: "{{ resource_group }}"
-        name: "{{ vm_name }}"
-        vm_size: "{{ vm_size }}"
-        admin_username: "{{ username }}"
-        admin_password: "{{ password }}"
-        image:
-          offer: UbuntuServer
-          publisher: Canonical
-          sku: '22.04-LTS'
-          version: latest
-    
-    # tasks for deallocate and delete vm
-        
+- name: Create virtual machine
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ resource_group }}"
+    name: "{{ vm_name }}"
+    vm_size: "{{ vm_size }}"
+    admin_username: "{{ username }}"
+    admin_password: "{{ password }}"
+    image:
+      offer: UbuntuServer
+      publisher: Canonical
+      sku: "22.04-LTS"
+      version: latest
