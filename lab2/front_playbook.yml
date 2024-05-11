@@ -1,0 +1,51 @@
+
+---
+- name: Front install
+  hosts: ansible_client
+  remote_user: root
+  become: true
+  tasks:
+    - name: update system
+      apt:
+        name: update
+    - name: install nodejs
+      apt:
+        name: nodejs
+        state: latest
+    - name: install npm
+      apt:
+        name: npm
+        state: latest
+    - name: install nvm
+      get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh
+        dest: ~/nvm_install.sh
+    - name: set nvm directory
+      set_fact: 
+        NVM_DIR: "$([ -z "${XDG_CONFIG_HOME-}" ]
+    - name: install nvm
+      shell: nvm install 18.13
+    - name: use nvm
+      shell: nvm use 18.13
+    - name: clone spring-petclinic in / dir
+      shell:
+        cmd: git clone https://github.com/spring-petclinic/spring-petclinic-angular
+        chdir: /
+    - name: adjust petclinic ports
+      shell:
+        cmd: sed -i "s/localhost/$BACK_ADDRESS/g" src/environments/environment.ts src/environments/environment.prod.ts && sed -i "s/9966/$BACK_PORT/g" src/environments/environment.ts src/environments/environment.prod.ts
+        chdir: /spring-petclinic-angular
+    - name: install angular cli
+      shell:
+        cmd: echo N | npm install -g @angular/cli@latest && echo N | npm install && echo N | ng analytics off
+        chdir: /spring-petclinic-angular
+    - name: build angular app
+      shell:
+        cmd: npm install angular-http-server && echo N | npm run build
+        chdir: /spring-petclinic-angular
+    - name: start angular app
+      shell:
+        cmd: npm run serve --port $FRONT_PORT
+        chdir: /spring-petclinic-angular
+
+    

@@ -1,0 +1,11 @@
+ansible==6.7.0
+azure-cli==2.60.0
+azure-mgmt-resource==23.1.0b2
+azure-mgmt-automation==1.0.0
+azure-mgmt-notificationhubs==8.0.0
+azure-mgmt-datafactory==7.0.0
+azure-mgmt-network==19.1.0
+azure-storage-blob==12.20.0
+azure-identity==1.16.0
+msgraph-core==1.0.0
+msgraph-sdk==1.2.0
