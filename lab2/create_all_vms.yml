@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   vars:
-    ansible_python_interpreter: /usr/bin/python3
+    ansible_python_interpreter: .venv/bin/python3
   vars_files:
     - vars.yml
   tasks:
@@ -12,17 +12,17 @@
         name: "{{ resource_group }}"
         location: "{{ location }}"
 
-    - name: Crate virtual network
+    - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: "{{ resource_group }}"
-        name: "{{ vnet_name }}"
-        address_prefix: "{{ network_addr_prefix }}"
+        name: "{{ network_name }}"
+        address_prefixes: "{{ network_addr_prefix }}"
 
     - name: Add subnets
       azure_rm_subnet:
         resource_group: "{{ resource_group }}"
         name: "{{ subnet_name }}"
-        virtual_network_name: "{{ vnet_name }}"
+        virtual_network_name: "{{ network_name }}"
         address_prefix: "{{ subnet_prefix }}"
 
     - import_tasks: create_vm.yml
@@ -31,6 +31,8 @@
         vm_size: "{{db_vm_size}}"
         vm_port: "{{db_port}}"
         vm_private_ip: "{{db_private_ip}}"
+        nsg_name: "{{db_nsg_name}}"
+        public_ip_allocate: "{{db_public_ip}}"
 
     - import_tasks: create_vm.yml
       vars:
@@ -38,6 +40,8 @@
         vm_size: "{{frontend_vm_size}}"
         vm_port: "{{frontend_port}}"
         vm_private_ip: "{{frontend_private_ip}}"
+        nsg_name: "{{frontend_nsg_name}}"
+        public_ip_allocate: "{{frontend_public_ip}}"
 
     - import_tasks: create_vm.yml
       vars:
@@ -45,5 +49,7 @@
         vm_size: "{{backend_vm_size}}"
         vm_port: "{{backend_port}}"
         vm_private_ip: "{{backend_private_ip}}"
+        nsg_name: "{{backend_nsg_name}}"
+        public_ip_allocate: "{{backend_public_ip}}"
 
     # tasks for deallocate and poweroff resource group

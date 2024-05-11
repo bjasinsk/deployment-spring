@@ -24,12 +24,7 @@ database_password=$AZURE_VM_PASSWORD
 
 # pip install --deps ansible
 # ansible-galaxy collection install azure.azcollection
-pip install azure-cli==2.60.0
-pip install azure-mgmt-resource==23.1.0b2
-pip install azure-mgmt-automation
-# pip install 'ansible[azure]'
-pip install azure-mgmt-network
-pip install azure-storage-blob
+pip install -r azure-requirements.txt
 
 
 # pip install azure-mgmt
@@ -40,8 +35,11 @@ ansible-galaxy collection install azure.azcollection --force
 ansible-galaxy collection install azure.azcollection --upgrade
 
 
-# pliku vars.yml nie odpala się jako playbook chyba albo nie umiem tego odpalić tak 
+# pliku vars.yml nie odpala się jako playbook chyba albo nie umiem tego odpalić tak
 # ansible-playbook vars.yml --extra-vars  "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
 
 #ansible-playbook create_all_vms.yml
 ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+
+ansible-playbook db_playbook.yml
+ansible-playbook back_playbook.yml --extra-vars
