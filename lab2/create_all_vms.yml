@@ -6,7 +6,7 @@
     ansible_python_interpreter: python3
   vars_files:
     - vars.yml
-  tasks:
+  pre_tasks:
     - name: Create resource group
       azure_rm_resourcegroup:
         name: "{{ resource_group }}"
@@ -52,4 +52,11 @@
         nsg_name: "{{backend_nsg_name}}"
         public_ip_allocate: "{{backend_public_ip}}"
 
-    # tasks for deallocate and poweroff resource group
+  # roles:
+  #   - database
+  #   - frontend
+  #   - backend
+  # - import_tasks: /roles/database/tasks/main.yml
+  # - import_tasks: /roles/backend/tasks/main.yml
+  # - import_tasks: /roles/frontend/tasks/main.yml
+  # tasks for deallocate and poweroff resource group

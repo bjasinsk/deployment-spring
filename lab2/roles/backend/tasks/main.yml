@@ -1,14 +1,14 @@
 - name: backend - Copy run script BE
   ansible.builtin.copy:
     src: run-back.sh
-    dest: /home/{{AZURE_VM_USERNAME}}/run-back.sh
+    dest: /home/azureuser/run-back.sh
 
 - name: backend - Give access permission to run script 
   ansible.builtin.command:
     cmd: chmod +x ./run-back.sh
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    chdir: /home/azureuser/
 
 - name: backend - Execute script 
   ansible.builtin.script:
-    cmd: ./run_back.sh {{db_private_ip}} {{db_port}} {{backend_port}}
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    cmd: ./run-back.sh {{db_private_ip}} {{db_port}} {{backend_port}}
+    chdir: /home/azureuser/

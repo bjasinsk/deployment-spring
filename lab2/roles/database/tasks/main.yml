@@ -1,14 +1,14 @@
 - name: db - Copy script
   ansible.builtin.copy:
     src: db.sh
-    dest: /home/{{AZURE_VM_USERNAME}}/db.sh
+    dest: /home/azureuser/db.sh
 
 - name: db - Give permission 
   ansible.builtin.command:
     cmd: chmod +x ./db.sh
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    chdir: /home/azureuser/
 
 - name: db - Execute script 
   ansible.builtin.script:
     cmd: ./db.sh
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    chdir: /home/azureuser/

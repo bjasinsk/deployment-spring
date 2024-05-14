@@ -7,8 +7,8 @@ disk_type: "Standard_LRS"
 frontend_vm_size: "Standard_B2s"
 backend_vm_size: "Standard_B2s"
 db_vm_size: "Standard_DS1_v2"
-username: "{{ lookup('env', 'AZURE_VM_USERNAME') }}"
-password: "{{ lookup('env', 'AZURE_VM_PASSWORD') }}"
+username: "azureuser"
+password: "Haslo123Haslo123"
 frontend_port: 4200
 frontend_private_ip: "10.0.4.7"
 backend_port: 9966

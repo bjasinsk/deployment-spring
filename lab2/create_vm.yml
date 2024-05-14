@@ -30,7 +30,7 @@
     admin_username: "{{ username }}"
     admin_password: "{{ password }}"
     managed_disk_type: "{{ disk_type }}"
-    public_ip_allocation_metod: "{{ public_ip_allocate }}"
+    public_ip_allocation_method: "{{ public_ip_allocate }}"
     image:
       offer: 0001-com-ubuntu-server-jammy
       publisher: Canonical

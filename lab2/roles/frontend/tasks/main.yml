@@ -1,14 +1,14 @@
 - name: front - Copy script
   ansible.builtin.copy:
     src: run-front.sh
-    dest: /home/{{AZURE_VM_USERNAME}}/run-front.sh
+    dest: /home/azureuser/run-front.sh
 
 - name: front - Give permission
   ansible.builtin.command:
     cmd: chmod +x ./run-front.sh
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    chdir: /home/azureuser/
 
 - name: front - Execute script 
   ansible.builtin.script:
-    cmd: ./run-front.sh {{backend_public_ip}} {{backend_port}} {{frontend_port}}
-    chdir: /home/{{AZURE_VM_USERNAME}}/
+    cmd: ./run-front.sh {{backend_private_ip}} {{backend_port}} {{frontend_port}}
+    chdir: /home/azureuser/
