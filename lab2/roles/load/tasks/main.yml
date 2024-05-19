@@ -1,0 +1,50 @@
+---
+- name: Set up Load Balancer
+  become: yes
+  - name: Update and install necessary packages
+    ansible.builtin.apt:
+      update_cache: yes
+      name:
+        - nginx
+      state: present
+
+  - name: Create balancer filter config file
+    ansible.builtin.shell: |
+      cat > loadbalancerfilter.conf << EOL
+      server {
+        listen      $BALANCER_PORT;
+        location /petclinic/api {
+          if (\$request_method = POST ) {
+            proxy_pass http://$BACKEND_WRITE_ADDRESS:$BACKEND_WRITE_PORT;
+          }
+
+          if (\$request_method = PUT) {
+            proxy_pass http://$BACKEND_WRITE_ADDRESS:$BACKEND_WRITE_PORT;
+          }
+
+          if (\$request_method = DELETE) {
+            proxy_pass http://$BACKEND_WRITE_ADDRESS:$BACKEND_WRITE_PORT;
+          }
+          if (\$request_method = OPTIONS) {
+            proxy_pass http://$BACKEND_WRITE_ADDRESS:$BACKEND_WRITE_PORT;
+          }
+
+          if (\$request_method = GET ) {
+             proxy_pass http://$BACKEND_READ_ADDRESS:$BACKEND_READ_PORT;
+          }
+        }
+      }
+      EOL
+    args:
+      chdir: /home/azureuser
+
+    - name: Move created balancer config file to nginx conf dir
+      ansible.builtin.shell:
+        cmd: mv loadbalancerfilter.conf /etc/nginx/conf.d/loadbalancerfilter.conf
+      args:
+        chdir: /home/azureuser
+
+
+    - name: Reload Nginx
+
+...

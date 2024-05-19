@@ -3,33 +3,36 @@ all:
     frontend_host:
       vm_name: "angular"
       ansible_user: "azureuser"
-      ansible_password: "Haslo123Haslo123"
-      ansible_host: "20.215.244.254"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ frontend_ip }}"
+      ansible_python_interpreter: /usr/bin/python3
 
     backend_host:
       vm_name: "spring"
       ansible_user: "azureuser"
-      ansible_password: "Haslo123Haslo123"
-      ansible_host: "20.215.244.208"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ backend_ip }}"
+      ansible_python_interpreter: /usr/bin/python3
 
     db_host:
       vm_name: "db"
       ansible_user: "azureuser"
-      ansible_password: "Haslo123Haslo123"
-      ansible_host: "20.215.244.140"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ db_ip }}"
+      ansible_python_interpreter: /usr/bin/python3
 
   children:
     frontend:
       hosts:
         frontend_host:
-          backend_private_ip: "20.215.244.208"
+          backend_private_ip: "{{ backend_ip }}"
           backend_port: 9966
           frontend_port: 4200
     backend:
       hosts:
         backend_host:
           backend_port: 9966
-          db_private_ip: "20.215.244.140"
+          db_private_ip: "{{ db_ip }}"
           db_port: 3306
     database:
       hosts:

@@ -25,14 +25,38 @@
         virtual_network_name: "{{ network_name }}"
         address_prefix: "{{ subnet_prefix }}"
 
+    - name: Create NSG
+      azure_rm_securitygroup:
+        resource_group: "{{ resource_group }}"
+        name: "{{ nsg_name }}"
+        rules:
+          - name: "aaAllowSSH"
+            protocol: Tcp
+            priority: 1000
+            destination_port_range: "{{ ssh_port }}"
+            access: Allow
+            direction: Inbound
+          - name: "aaAllowAllInbound"
+            protocol: "*"
+            priority: 900
+            destination_port_range: "*"
+            access: Allow
+            direction: Inbound
+          - name: "aaAllowAllOutbound"
+            protocol: "*"
+            priority: 800
+            destination_port_range: "*"
+            access: Allow
+            direction: Outbound
+
     - import_tasks: create_vm.yml
       vars:
         vm_name: "{{db_vm_name}}"
         vm_size: "{{db_vm_size}}"
         vm_port: "{{db_port}}"
         vm_private_ip: "{{db_private_ip}}"
-        nsg_name: "{{db_nsg_name}}"
         public_ip_allocate: "{{db_public_ip}}"
+
 
     - import_tasks: create_vm.yml
       vars:
@@ -40,7 +64,6 @@
         vm_size: "{{frontend_vm_size}}"
         vm_port: "{{frontend_port}}"
         vm_private_ip: "{{frontend_private_ip}}"
-        nsg_name: "{{frontend_nsg_name}}"
         public_ip_allocate: "{{frontend_public_ip}}"
 
     - import_tasks: create_vm.yml
@@ -49,14 +72,4 @@
         vm_size: "{{backend_vm_size}}"
         vm_port: "{{backend_port}}"
         vm_private_ip: "{{backend_private_ip}}"
-        nsg_name: "{{backend_nsg_name}}"
         public_ip_allocate: "{{backend_public_ip}}"
-
-  # roles:
-  #   - database
-  #   - frontend
-  #   - backend
-  # - import_tasks: /roles/database/tasks/main.yml
-  # - import_tasks: /roles/backend/tasks/main.yml
-  # - import_tasks: /roles/frontend/tasks/main.yml
-  # tasks for deallocate and poweroff resource group

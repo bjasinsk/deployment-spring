@@ -1,26 +1,23 @@
-- name: Create NSG
-  azure_rm_securitygroup:
+- name: Create a public IP address
+  azure.azcollection.azure_rm_publicipaddress:
     resource_group: "{{ resource_group }}"
-    name: "{{ nsg_name }}"
-    rules:
-      - name: "{{ vm_name }}AllowSSH"
-        protocol: Tcp
-        priority: 1000
-        destination_port_range: "{{ ssh_port }}"
-        access: Allow
-        direction: Inbound
-      - name: "{{ vm_name }}AllowAllInbound"
-        protocol: "*"
-        priority: 900
-        destination_port_range: "*"
-        access: Allow
-        direction: Inbound
-      - name: "{{ vm_name }}AllowAllOutbound"
-        protocol: "*"
-        priority: 800
-        destination_port_range: "*"
-        access: Allow
-        direction: Outbound
+    allocation_method: Static
+    name: "{{ vm_name }}PublicIP"
+    domain_name_label: "{{ vm_name }}-dns"
+
+- name: Create a network interface
+  azure.azcollection.azure_rm_networkinterface:
+    resource_group: "{{ resource_group }}"
+    name: "{{vm_name}}{{ network_interface_name }}"
+    virtual_network: "{{ network_name }}"
+    subnet: "{{ subnet_name }}"
+    security_group: "{{ nsg_name }}"
+    ip_configurations:
+      - name: "{{vm_name}}ipconfig"
+        private_ip_address: "{{ vm_private_ip }}"
+        private_ip_allocation_method: Static
+        public_ip_address_name: "{{ vm_name }}PublicIP"
+
 
 - name: Create virtual machine
   azure.azcollection.azure_rm_virtualmachine:
@@ -30,7 +27,7 @@
     admin_username: "{{ username }}"
     admin_password: "{{ password }}"
     managed_disk_type: "{{ disk_type }}"
-    public_ip_allocation_method: "{{ public_ip_allocate }}"
+    network_interfaces: "{{vm_name}}{{ network_interface_name }}"
     image:
       offer: 0001-com-ubuntu-server-jammy
       publisher: Canonical

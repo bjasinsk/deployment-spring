@@ -1,14 +1,96 @@
+- name: Update apt-get
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install MySQL server
+  ansible.builtin.apt:
+    name: mysql-server
+    state: present
+
+- name: Install wget
+  ansible.builtin.apt:
+    name: wget
+    state: present
+
+- name: Download initDB.sql
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/initDB.sql"
+    dest: /tmp/initDB.sql
+
+- name: Download populateDB.sql
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/populateDB.sql"
+    dest: /tmp/populateDB.sql
+
 - name: db - Copy script
   ansible.builtin.copy:
-    src: db.sh
-    dest: /home/azureuser/db.sh
+    src: .my.cnf
+    dest: /home/azureuser/.my.cnf
 
-- name: db - Give permission 
-  ansible.builtin.command:
-    cmd: chmod +x ./db.sh
-    chdir: /home/azureuser/
+- name: Create petclinic database
+  mysql_db:
+    name: petclinic
+    state: present
+    # environment:
+    #   MYSQL_READ_DEFAULT_FILE: /root/.my.cnf
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: localhost
 
-- name: db - Execute script 
-  ansible.builtin.script:
-    cmd: ./db.sh
-    chdir: /home/azureuser/
+- name: Create MySQL user
+  mysql_user:
+    name: pc
+    host: "%"
+    password: petclinic
+    priv: "petclinic.*:ALL"
+    state: present
+
+- name: Flush MySQL privileges
+  mysql_user:
+    name: pc
+    host: "%"
+    state: present
+    priv: "petclinic.*:ALL"
+    update_password: always
+
+- name: Modify MySQL bind address
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address\s*='
+    line: 'bind-address = 0.0.0.0'
+    state: present
+
+- name: Modify MySQLX bind address
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^mysqlx-bind-address\s*='
+    line: 'mysqlx-bind-address = 0.0.0.0'
+    state: present
+
+- name: Remove the 7th line from initDB.sql
+  ansible.builtin.shell: |
+    sed -i '7d' /tmp/initDB.sql
+
+- name: Append populateDB.sql to initDB.sql
+  ansible.builtin.shell: |
+    cat /tmp/populateDB.sql >> /tmp/initDB.sql
+
+- name: Execute initDB.sql
+  mysql_db:
+    name: petclinic
+    state: import
+    target: /tmp/initDB.sql
+
+- name: Unlock MySQL tables
+  mysql_query:
+    query: "UNLOCK TABLES;"
+
+- name: Restart MySQL service
+  ansible.builtin.service:
+    name: mysql
+    state: restarted
+
+- name: Print completion message
+  ansible.builtin.debug:
+    msg: "Finished database setup"

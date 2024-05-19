@@ -1,4 +1,4 @@
-resource_group: "lab2Config1"
+resource_group: "lab2Config1jjjjjjjjjjjhhgjg"
 location: "polandcentral"
 frontend_vm_name: "angular"
 backend_vm_name: "spring"
@@ -15,6 +15,8 @@ backend_port: 9966
 backend_private_ip: "10.0.4.8"
 db_port: 3306
 db_private_ip: "10.0.4.9"
+db_slave_port: 3307
+db_slave_private_ip: "10.0.4.10"
 ssh_port: 22
 network_addr_prefix: "10.0.0.0/16"
 network_name: VNet
@@ -26,3 +28,9 @@ backend_nsg_name: "backendNSG2"
 backend_public_ip: "Static"
 frontend_public_ip: "Static"
 db_public_ip: "Static"
+network_interface_name: "nsg_interface"
+nsg_name: "nsg"
+ansible_password: "Haslo123Haslo123"
+frontend_ip: "20.215.249.173"
+backend_ip: "20.215.249.117"
+db_ip: "20.215.253.86"

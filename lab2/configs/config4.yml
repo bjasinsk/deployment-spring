@@ -1,0 +1,68 @@
+all:
+  hosts:
+    frontend_host:
+      vm_name: "angular"
+      ansible_user: "azureuser"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ frontend_ip }}"
+
+    backend_host1:
+      vm_name: "spring"
+      ansible_user: "azureuser"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ backend_ip }}"
+
+    backend_host1:
+      vm_name: "spring"
+      ansible_user: "azureuser"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ backend_ip }}"
+
+    db_master_host:
+      vm_name: "db"
+      ansible_user: "azureuser"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ db_master_ip }}"
+
+    db_slave_host:
+      vm_name: "db"
+      ansible_user: "azureuser"
+      ansible_password: "{{ ansible_password }}"
+      ansible_host: "{{ db_slave_ip }}"
+
+    nginx_host:
+      vm_name: "nginx"
+      ansible_user: azureuser
+      ansible_ssh_private_key_file: "{{ ansible_password }}"
+      ansible_host: "{{ backend_ip }}"
+
+
+  children:
+    frontend:
+      hosts:
+        frontend_host:
+          backend_private_ip1: "{{ backend_private_ip }}"
+          backend_port1: 9966
+          backend_private_ip2: "{{ backend_private_ip }}"
+          backend_port2: 9967
+          frontend_public_ip: "{{ frontend_ip }}"
+          frontend_port: 4200
+    backend:
+      hosts:
+        backend_host1:
+          backend_port: 9966
+          db_ip: "{{ db_private_ip }}"
+          db_port: 3306
+          db_user: pc
+          db_password: be1
+          host_id: vb
+        backend_host2:
+          backend_port: 9967
+          db_ip: "{{ db_slave_private_ip }}"
+          db_port: 3306
+    database_master:
+      hosts:
+        db_master_host:
+          db_port: 3306
+        db_slave_host:
+          db_

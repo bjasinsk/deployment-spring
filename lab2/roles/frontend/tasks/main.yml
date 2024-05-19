@@ -1,14 +1,105 @@
-- name: front - Copy script
-  ansible.builtin.copy:
-    src: run-front.sh
-    dest: /home/azureuser/run-front.sh
+- name: Update and install necessary packages
+  ansible.builtin.apt:
+    update_cache: yes
+    name: 
+      - nodejs
+      - npm
+    state: present
+  become: yes
 
-- name: front - Give permission
+- name: Install NVM
+  ansible.builtin.shell: |
+    wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+    echo 'export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"' >> ~/.bashrc
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Source NVM and install Node.js
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    nvm install 18.13
+    nvm use 18.13
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Clone the spring-petclinic-angular repository
+  ansible.builtin.git:
+    repo: https://github.com/spring-petclinic/spring-petclinic-angular
+    dest: /home/azureuser/spring-petclinic-angular
+
+- name: Update backend address and port in environment files
+  ansible.builtin.shell: |
+    sed -i "s/localhost/{{ backend_private_ip }}/g" src/environments/environment.ts src/environments/environment.prod.ts
+    sed -i "s/9966/{{ backend_port }}/g" src/environments/environment.ts src/environments/environment.prod.ts
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+
+- name: Print the updated environment.ts file
   ansible.builtin.command:
-    cmd: chmod +x ./run-front.sh
-    chdir: /home/azureuser/
+    cmd: cat src/environments/environment.ts
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
 
-- name: front - Execute script 
-  ansible.builtin.script:
-    cmd: ./run-front.sh {{backend_private_ip}} {{backend_port}} {{frontend_port}}
-    chdir: /home/azureuser/
+- name: Install Angular CLI globally
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    echo N | npm install -g @angular/cli@latest
+  args:
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Install project dependencies
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    echo N | npm install
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Disable Angular CLI analytics
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    echo N | ng analytics off
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Install angular-http-server
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    npm install angular-http-server
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Build the project
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    echo N | npm run build
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
+
+- name: Start the angular-http-server
+  ansible.builtin.shell: |
+    source ~/.bashrc
+    npx angular-http-server --path ./dist -p {{ frontend_port }} &
+  args:
+    chdir: /home/azureuser/spring-petclinic-angular
+    executable: /bin/bash
+  environment:
+    HOME: /home/azureuser
