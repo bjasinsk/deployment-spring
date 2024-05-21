@@ -1,45 +1,14 @@
-- name: backend - Update and install packages
-  ansible.builtin.apt:
-    update_cache: yes
-    name: openjdk-17-jdk
-    state: present
+- name: backend - Copy run script BE
+  ansible.builtin.copy:
+    src: run-back.sh
+    dest: /home/{{username}}/run-back.sh
 
-- name: backend - Clone the spring-petclinic-rest repository
-  ansible.builtin.git:
-    repo: https://github.com/spring-petclinic/spring-petclinic-rest.git
-    dest: /spring-petclinic-rest
+- name: backend - Give access permission to run script 
+  ansible.builtin.command:
+    cmd: chmod +x ./run-back.sh
+    chdir: /home/{{username}}/
 
-- name: backend - Change database to MySQL
-  ansible.builtin.lineinfile:
-    path: /spring-petclinic-rest/src/main/resources/application.properties
-    regexp: 'hsqldb'
-    line: 'mysql'
-  notify: Restart backend service
-
-- name: backend - Update database connection string
-  ansible.builtin.lineinfile:
-    path: /spring-petclinic-rest/src/main/resources/application-mysql.properties
-    regexp: 'localhost:3306'
-    line: "{{ db_private_ip }}:{{ db_port }}"
-  notify: Restart backend service
-
-- name: backend - Update backend port
-  ansible.builtin.lineinfile:
-    path: /spring-petclinic-rest/src/main/resources/application.properties
-    regexp: '9966'
-    line: "{{ backend_port }}"
-  notify: Restart backend service
-
-- name: backend - Build and run the application
-  ansible.builtin.command: ./mvnw spring-boot:run
-  args:
-    chdir: /spring-petclinic-rest
-  async: 0
-  poll: 0
-  notify: Restart backend service
-
-# handlers:
-#   - name: Restart backend service
-#     ansible.builtin.service:
-#       name: spring-petclinic-rest
-#       state: restarted
+- name: backend - Execute script 
+  ansible.builtin.script:
+    cmd: ./run-back.sh {{db_private_ip}} {{db_port}} {{backend_port}}
+    chdir: /home/{{username}}/

@@ -26,15 +26,15 @@ all:
       hosts:
         frontend_host:
           backend_private_ip: "{{ backend_ip }}"
-          backend_port: 9966
-          frontend_port: 4200
+          backend_port: "{{ backend_port }}"
+          frontend_port: "{{ frontend_port }}"
     backend:
       hosts:
         backend_host:
-          backend_port: 9966
+          backend_port: "{{ backend_port }}"
           db_private_ip: "{{ db_ip }}"
-          db_port: 3306
+          db_port: "{{ db_port }}"
     database:
       hosts:
         db_host:
-          db_port: 3306
+          db_port: "{{ db_port }}"
