@@ -10,5 +10,5 @@
 
 - name: backend - Execute script 
   ansible.builtin.script:
-    cmd: ./run-back.sh {{db_private_ip}} {{db_port}} {{backend_port}}
+    cmd: ./run-back.sh {{db_private_ip}} {{db_port}} {{backend_port}} {{folder}}
     chdir: /home/{{username}}/

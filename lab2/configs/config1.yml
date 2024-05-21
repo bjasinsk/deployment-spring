@@ -34,6 +34,7 @@ all:
           backend_port: "{{ backend_port }}"
           db_private_ip: "{{ db_ip }}"
           db_port: "{{ db_port }}"
+          folder: "back_folder"
     database:
       hosts:
         db_host:

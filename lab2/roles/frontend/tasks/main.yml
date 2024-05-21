@@ -10,5 +10,5 @@
 
 - name: front - Execute script 
   ansible.builtin.script:
-    cmd: ./run-front.sh {{backend_private_ip}} {{backend_port}} {{frontend_port}}
+    cmd: ./run-front.sh {{backend_ip}} {{backend_port}} {{frontend_port}}
     chdir: /home/{{username}}/

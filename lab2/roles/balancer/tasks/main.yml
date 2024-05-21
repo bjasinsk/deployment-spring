@@ -1,0 +1,14 @@
+- name: balancer - Copy run script
+  ansible.builtin.copy:
+    src: balancer.sh
+    dest: /home/{{username}}/balancer.sh
+
+- name: balancer - Give access permission to run script 
+  ansible.builtin.command:
+    cmd: chmod +x ./balancer.sh
+    chdir: /home/{{username}}/
+
+- name: balancer - Execute script 
+  ansible.builtin.script:
+    cmd: ./balancer.sh {{balancer_port}} {{backend_write_ip}} {{backend_write_port}} {{backend_read_ip}} {{backend_read_port}}
+    chdir: /home/{{username}}/

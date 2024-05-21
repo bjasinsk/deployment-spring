@@ -1,71 +1,14 @@
----
-- name: Set up Master database
-  become: yes
-  tasks:
+- name: db-master - Copy script
+  ansible.builtin.copy:
+    src: db-master.sh
+    dest: /home/{{username}}/db-master.sh
 
-  - name: Update and install necessary packages
-    ansible.builtin.apt:
-      update_cache: yes
-        name:
-          - mysql-server
-          - wget
+- name: db-master - Give permission
+  ansible.builtin.command:
+    cmd: chmod +x ./db-master.sh
+    chdir: /home/{{username}}/
 
-  - name: Download initDB.sql
-    ansible.builtin.get_url:
-      url: "https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/initDB.sql"
-      dest: /tmp/initDB.sql
-
-  - name: Download populateDB.sql
-    ansible.builtin.get_url:
-      url: "https://raw.githubusercontent.com/spring-petclinic/spring-petclinic-rest/master/src/main/resources/db/mysql/populateDB.sql"
-      dest: /tmp/populateDB.sql
-
-  - name: Create mysql config file
-    ansible.builtin.shell: |
-      cat <<EOL > user.sql
-      CREATE USER '{{ DATABASE_USER }}'@'%' IDENTIFIED BY '{{ DATABASE_PASSWORD }}';
-      GRANT ALL PRIVILEGES ON *.* TO '{{ DATABASE_USER }}'@'%' WITH GRANT OPTION;
-      CREATE USER 'replicate'@'%' IDENTIFIED BY 'password';
-      GRANT REPLICATION SLAVE ON *.* TO 'replicate'@'%';
-      EOL
-    args:
-      chdir: /home/azureuser
-
-  - name: Change ports in mysql configs
-    ansible.builtin.shell: |
-      sed -i "s/127.0.0.1/0.0.0.0/g" /etc/mysql/mysql.conf.d/mysqld.cnf
-      sed -i "s/.*server-id.*/server-id = 1/" /etc/mysql/mysql.conf.d/mysqld.cnf
-      sed -i "s/.*port.*/port = $DATABASE_PORT/" /etc/mysql/mysql.conf.d/mysqld.cnf
-      sed -i "1s/^/USE petclinic;\n/" ./populateDB.sql
-
-  - name: Run sql
-    ansible.builtin.shell: mysql < user.sql
-    args:
-      chdir: /home/azureuser
-    
-  - name: Change "{{ DATABASE_USER }}" user localhost password
-    ansible.builtin.shell: mysql -e "ALTER USER '{{ DATABASE_USER }}'@'localhost' IDENTIFIED WITH mysql_native_password BY '{{ DATABASE_PASSWORD }}';"
-
-  - name: Change replicate user localhost password
-    ansible.builtin.shell: mysql -e "ALTER USER 'replicate'@'localhost' IDENTIFIED WITH mysql_native_password BY 'slave_pass';"
-
-  - name: Modify database initialization file
-    ansible.builtin.shell: |
-      sed -i '7d' ./initDB.sql
-      cat ./populateDB.sql >> ./initDB.sql
-
-  - name: Run initialization file
-    ansible.builtin.shell: mysql < ./initDB.sql
-
-  - name: Flush database privileges
-    mysql_user:
-      name: 
-        name: "{{ DATABASE_USER }}"
-        host: localhost
-        priv: 
-
-  - name: Restart mysql
-    ansible.builtin.service:
-      name: mysql
-      state: restarted
-...
+- name: db-master - Execute script 
+  ansible.builtin.script:
+    cmd: ./db-master.sh {{database_port}} {{database_user}} {{database_password}}
+    chdir: /home/{{username}}/

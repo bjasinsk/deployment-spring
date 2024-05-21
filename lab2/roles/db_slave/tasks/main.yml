@@ -1,0 +1,14 @@
+- name: db-slave - Copy script
+  ansible.builtin.copy:
+    src: db-slave.sh
+    dest: /home/{{username}}/db-slave.sh
+
+- name: db-slave - Give permission
+  ansible.builtin.command:
+    cmd: chmod +x ./db-slave.sh
+    chdir: /home/{{username}}/
+
+- name: db-slave - Execute script 
+  ansible.builtin.script:
+    cmd: ./db-slave.sh {{database_port}} {{database_user}} {{database_password}} {{master_ip}} {{master_port}}
+    chdir: /home/{{username}}/

@@ -1,68 +1,100 @@
 all:
+  vars:
+    ansible_user: "azureuser"
+    ansible_password: "Haslo123Haslo123"
+    vm1_ip: "20.215.242.66"
+    vm2_ip: "20.215.242.85"
+    vm3_ip: "20.215.241.12"
+    vm1_private_ip: "10.0.4.7"
+    vm2_private_ip: "10.0.4.8"
+    vm3_private_ip: "10.0.4.9"
+    frontend_port: 4200
+    backend1_port: 9001
+    backend2_port: 9000
+    balancer_port: 9966
+    db_port: 3306
+
   hosts:
     frontend_host:
       vm_name: "angular"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ frontend_ip }}"
+      ansible_host: "{{ vm1_ip }}"
 
     backend_host1:
       vm_name: "spring"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ backend_ip }}"
+      ansible_host: "{{ vm2_ip }}"
 
-    backend_host1:
+    backend_host2:
       vm_name: "spring"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ backend_ip }}"
+      ansible_host: "{{ vm2_ip }}"
+
+    nginx_host:
+      vm_name: "spring"
+      ansible_user: azureuser
+      ansible_ssh_private_key_file: "{{ ansible_password }}"
+      ansible_host: "{{ vm2_ip }}"
 
     db_master_host:
-      vm_name: "db"
+      vm_name: "spring"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ db_master_ip }}"
+      ansible_host: "{{ vm2_ip }}"
 
     db_slave_host:
       vm_name: "db"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ db_slave_ip }}"
+      ansible_host: "{{ vm3_ip }}"
 
-    nginx_host:
-      vm_name: "nginx"
-      ansible_user: azureuser
-      ansible_ssh_private_key_file: "{{ ansible_password }}"
-      ansible_host: "{{ backend_ip }}"
 
 
   children:
     frontend:
       hosts:
         frontend_host:
-          backend_private_ip1: "{{ backend_private_ip }}"
-          backend_port1: 9966
-          backend_private_ip2: "{{ backend_private_ip }}"
-          backend_port2: 9967
-          frontend_public_ip: "{{ frontend_ip }}"
-          frontend_port: 4200
+          backend_ip: "{{ vm2_ip }}"
+          backend_port: "{{ balancer_port }}"
+          frontend_port: "{{ frontend_port }}"
+
     backend:
       hosts:
         backend_host1:
-          backend_port: 9966
-          db_ip: "{{ db_private_ip }}"
-          db_port: 3306
-          db_user: pc
-          db_password: be1
-          host_id: vb
+          db_private_ip: "127.0.0.1"
+          db_port: "{{ db_port }}"
+          backend_port: "{{ backend1_port }}"
+          folder: "jedynczka"
         backend_host2:
-          backend_port: 9967
-          db_ip: "{{ db_slave_private_ip }}"
-          db_port: 3306
-    database_master:
+          db_private_ip: "{{ vm3_private_ip }}"
+          db_port: "{{ db_port }}"
+          backend_port: "{{ backend2_port }}"
+          folder: "dwojeczka"
+    balancer:
+      hosts:
+        nginx_host:
+          balancer_port: "{{ balancer_port }}"
+          backend_write_ip: "127.0.0.1"
+          backend_write_port: "{{ backend1_port }}"
+          backend_read_ip: "127.0.0.1"
+          backend_read_port: "{{ backend2_port }}"
+          
+    db_master:
       hosts:
         db_master_host:
-          db_port: 3306
+          database_port: "{{db_port}}"
+          database_user: "pc"
+          database_password: "petclinic"
+
+    db_slave:
+      hosts:
         db_slave_host:
-          db_
+          database_port: "{{db_port}}"
+          database_user: "pc"
+          database_password: "petclinic"
+          master_ip: "{{vm2_private_ip}}"  
+          master_port: "{{db_port}}"
+
