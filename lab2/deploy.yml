@@ -9,21 +9,37 @@
       debug:
         msg: "Deploying to host {{ inventory_hostname }} with IP {{ ansible_host }}."
 
-- name: Deploy database
-  hosts: database
-  become: true
-  vars_files:
-    - vars.yml
-  roles:
-    - database
+# - name: Deploy db_master
+#   hosts: db_master
+#   become: true
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - db_master
 
-- name: Deploy backend
-  hosts: backend
-  become: true
-  vars_files:
-    - vars.yml
-  roles:
-    - backend
+# - name: Deploy db_slave
+#   hosts: db_slave
+#   become: true
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - db_slave
+
+# - name: Deploy database
+#   hosts: database
+#   become: true
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - database
+
+# - name: Deploy backend
+#   hosts: backend
+#   become: true
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - backend
 
 - name: Deploy frontend
   hosts: frontend
@@ -32,3 +48,11 @@
     - vars.yml
   roles:
     - frontend
+
+# - name: Deploy nginx
+#   hosts: balancer
+#   become: true
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - balancer

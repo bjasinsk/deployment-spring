@@ -9,6 +9,8 @@
     chdir: /home/{{username}}/
 
 - name: front - Execute script 
-  ansible.builtin.script:
+  async: 3600
+  poll: 0
+  ansible.builtin.shell:
     cmd: ./run-front.sh {{backend_ip}} {{backend_port}} {{frontend_port}}
     chdir: /home/{{username}}/

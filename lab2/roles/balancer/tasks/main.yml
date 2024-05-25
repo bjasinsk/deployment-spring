@@ -10,5 +10,5 @@
 
 - name: balancer - Execute script 
   ansible.builtin.script:
-    cmd: ./balancer.sh {{balancer_port}} {{backend_write_ip}} {{backend_write_port}} {{backend_read_ip}} {{backend_read_port}}
+    cmd: ./balancer.sh {{balancer_port_}} {{backend_write_ip}} {{backend_write_port}} {{backend_read_ip}} {{backend_read_port}}
     chdir: /home/{{username}}/

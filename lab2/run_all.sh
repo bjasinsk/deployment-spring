@@ -32,7 +32,5 @@ ansible-galaxy collection install azure.azcollection --upgrade
 
 ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
 
-# ansible-playbook /configs/config1.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
-
-
-# ansible-playbook deploy.yml 
+# ansible-playbook configs/config4.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+ansible-playbook -i configs/config4.yml deploy.yml

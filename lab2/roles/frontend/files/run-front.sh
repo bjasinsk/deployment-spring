@@ -28,4 +28,9 @@ echo N | ng analytics off
 npm install angular-http-server
 echo N | npm run build
 
+
+sudo chmod u+rw /spring-petclinic-angular/angular.json
+sudo chown -R azureuser:azureuser /spring-petclinic-angular/
+sudo chmod -R u+w /spring-petclinic-angular/
+
 npx angular-http-server --path ./dist -p $FRONT_PORT &

@@ -8,7 +8,18 @@
     cmd: chmod +x ./run-back.sh
     chdir: /home/{{username}}/
 
+- name: Print script parameters
+  ansible.builtin.debug:
+    msg: "Executing script with parameters: db_private_ip={{ _db_private_ip }}, db_port={{ db_port }}, backend_port={{ _backend_port }}, folder={{ folder }}"
+
 - name: backend - Execute script 
   ansible.builtin.script:
-    cmd: ./run-back.sh {{db_private_ip}} {{db_port}} {{backend_port}} {{folder}}
+    cmd: ./run-back.sh {{_db_private_ip}} {{db_port}} {{_backend_port}} {{folder}}
     chdir: /home/{{username}}/
+
+- name: Build and run BE application
+  async: 3600
+  poll: 0
+  ansible.builtin.shell:
+    cmd: ./mvnw spring-boot:run
+    chdir: /{{folder}}/spring-petclinic-rest

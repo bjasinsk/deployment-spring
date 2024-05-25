@@ -37,4 +37,5 @@ EOL
 
 sudo mv loadbalancerfilter.conf /etc/nginx/conf.d/loadbalancerfilter.conf
 
+sudo nginx -c /etc/nginx/nginx.conf
 sudo nginx -s reload

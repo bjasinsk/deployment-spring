@@ -3,7 +3,7 @@
     resource_group: "{{ resource_group }}"
     allocation_method: Static
     name: "{{ vm_name }}PublicIP"
-    domain_name_label: "{{ vm_name }}-dns"
+    domain_name_label: "{{ vm_name }}-dnsfdsdfs"
 
 - name: Create a network interface
   azure.azcollection.azure_rm_networkinterface:

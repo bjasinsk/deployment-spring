@@ -2,9 +2,9 @@ all:
   vars:
     ansible_user: "azureuser"
     ansible_password: "Haslo123Haslo123"
-    vm1_ip: "20.215.242.66"
-    vm2_ip: "20.215.242.85"
-    vm3_ip: "20.215.241.12"
+    vm1_ip: "20.215.249.220"
+    vm2_ip: "20.215.252.84"
+    vm3_ip: "20.215.247.217"
     vm1_private_ip: "10.0.4.7"
     vm2_private_ip: "10.0.4.8"
     vm3_private_ip: "10.0.4.9"
@@ -31,7 +31,7 @@ all:
       vm_name: "spring"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ vm2_ip }}"
+      ansible_host: "{{ vm3_ip }}"
 
     nginx_host:
       vm_name: "spring"
@@ -64,22 +64,22 @@ all:
     backend:
       hosts:
         backend_host1:
-          db_private_ip: "127.0.0.1"
+          _db_private_ip: "127.0.0.1"
           db_port: "{{ db_port }}"
-          backend_port: "{{ backend1_port }}"
+          _backend_port: "{{ backend1_port }}"
           folder: "jedynczka"
         backend_host2:
-          db_private_ip: "{{ vm3_private_ip }}"
+          _db_private_ip: "127.0.0.1"
           db_port: "{{ db_port }}"
-          backend_port: "{{ backend2_port }}"
+          _backend_port: "{{ backend2_port }}"
           folder: "dwojeczka"
     balancer:
       hosts:
         nginx_host:
-          balancer_port: "{{ balancer_port }}"
+          balancer_port_: "{{ balancer_port }}"
           backend_write_ip: "127.0.0.1"
           backend_write_port: "{{ backend1_port }}"
-          backend_read_ip: "127.0.0.1"
+          backend_read_ip: "{{vm3_private_ip}}"
           backend_read_port: "{{ backend2_port }}"
           
     db_master:
