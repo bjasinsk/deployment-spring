@@ -1,16 +1,53 @@
-- name: front - Copy script
+# - name: front - Copy script
+#   ansible.builtin.copy:
+#     src: run-front.sh
+#     dest: /home/{{username}}/run-front.sh
+
+# - name: front - Give permission
+#   ansible.builtin.command:
+#     cmd: chmod +x ./run-front.sh
+#     chdir: /home/{{username}}/
+
+# - name: front - Execute script 
+#   ansible.builtin.script:
+#     cmd: ./run-front.sh {{backend_ip}} {{backend_port}} {{frontend_port}}
+#     chdir: /home/{{username}}/
+# ---------------------------------
+
+- name: Install curl
+  become: true
+  apt:
+    name: curl
+    state: latest
+
+- name: Clone spring repository
+  ansible.builtin.git:
+    repo: https://github.com/spring-petclinic/spring-petclinic-angular.git
+    dest: /home/{{ username }}/spring-petclinic-angular/
+    force: yes
+
+- name: Update configuration
+  ansible.builtin.script:
+    cmd: front.sh {{backend_ip}} {{backend_port}}
+    chdir: /home/{{ username }}/spring-petclinic-angular/
+
+- name: Copy run script
   ansible.builtin.copy:
-    src: run-front.sh
-    dest: /home/{{username}}/run-front.sh
+    src: install.sh
+    dest: /home/{{ username }}/install.sh
 
-- name: front - Give permission
+- name: Add execute privileges
+  become: true
   ansible.builtin.command:
-    cmd: chmod +x ./run-front.sh
-    chdir: /home/{{username}}/
+    cmd: chmod +x ./install.sh
+    chdir: /home/{{ username }}/
 
-- name: front - Execute script 
+- name: Install package manager and deploy application
   async: 3600
   poll: 0
-  ansible.builtin.shell:
-    cmd: ./run-front.sh {{backend_ip}} {{backend_port}} {{frontend_port}}
-    chdir: /home/{{username}}/
+  ansible.builtin.command:
+    cmd: ./install.sh {{ frontend_port }}
+    chdir: /home/{{ username }}/
+  become: yes
+  become_method: sudo
+  become_user: root

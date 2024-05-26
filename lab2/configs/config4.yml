@@ -2,7 +2,7 @@ all:
   vars:
     ansible_user: "azureuser"
     ansible_password: "Haslo123Haslo123"
-    vm1_ip: "20.215.249.220"
+    vm1_ip: "20.215.247.134"
     vm2_ip: "20.215.252.84"
     vm3_ip: "20.215.247.217"
     vm1_private_ip: "10.0.4.7"

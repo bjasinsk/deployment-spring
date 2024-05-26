@@ -49,13 +49,13 @@
             access: Allow
             direction: Outbound
 
-    - import_tasks: create_vm.yml
-      vars:
-        vm_name: "{{db_vm_name}}"
-        vm_size: "{{db_vm_size}}"
-        vm_port: "{{db_port}}"
-        vm_private_ip: "{{db_private_ip}}"
-        public_ip_allocate: "{{db_public_ip}}"
+    # - import_tasks: create_vm.yml
+    #   vars:
+    #     vm_name: "{{db_vm_name}}"
+    #     vm_size: "{{db_vm_size}}"
+    #     vm_port: "{{db_port}}"
+    #     vm_private_ip: "{{db_private_ip}}"
+    #     public_ip_allocate: "{{db_public_ip}}"
 
 
     - import_tasks: create_vm.yml
@@ -66,10 +66,10 @@
         vm_private_ip: "{{frontend_private_ip}}"
         public_ip_allocate: "{{frontend_public_ip}}"
 
-    - import_tasks: create_vm.yml
-      vars:
-        vm_name: "{{backend_vm_name}}"
-        vm_size: "{{backend_vm_size}}"
-        vm_port: "{{backend_port}}"
-        vm_private_ip: "{{backend_private_ip}}"
-        public_ip_allocate: "{{backend_public_ip}}"
+    # - import_tasks: create_vm.yml
+    #   vars:
+    #     vm_name: "{{backend_vm_name}}"
+    #     vm_size: "{{backend_vm_size}}"
+    #     vm_port: "{{backend_port}}"
+    #     vm_private_ip: "{{backend_private_ip}}"
+    #     public_ip_allocate: "{{backend_public_ip}}"
