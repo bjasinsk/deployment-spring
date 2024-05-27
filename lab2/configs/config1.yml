@@ -1,40 +1,49 @@
 all:
+  vars:
+    ansible_user: "azureuser"
+    ansible_password: "Haslo123Haslo123"
+    vm1_ip: "20.215.253.229"
+    vm2_ip: "20.215.252.60"
+    vm3_ip: "20.215.253.254"
+    vm1_private_ip: "10.0.4.7"
+    vm2_private_ip: "10.0.4.8"
+    vm3_private_ip: "10.0.4.9"
+    frontend_port: 4200
+    backend_port: 9000
+    db_port: 3306
   hosts:
     frontend_host:
       vm_name: "angular"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ frontend_ip }}"
-      ansible_python_interpreter: /usr/bin/python3
+      ansible_host: "{{ vm1_ip }}"
 
-    backend_host:
+    backend_host1:
       vm_name: "spring"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ backend_ip }}"
-      ansible_python_interpreter: /usr/bin/python3
+      ansible_host: "{{ vm2_ip }}"
 
     db_host:
       vm_name: "db"
       ansible_user: "azureuser"
       ansible_password: "{{ ansible_password }}"
-      ansible_host: "{{ db_ip }}"
-      ansible_python_interpreter: /usr/bin/python3
+      ansible_host: "{{ vm3_ip }}"
 
   children:
     frontend:
       hosts:
         frontend_host:
-          backend_private_ip: "{{ backend_ip }}"
-          backend_port: "{{ backend_port }}"
-          frontend_port: "{{ frontend_port }}"
+          _backend_ip: "{{ vm2_ip }}"
+          _backend_port: "{{ backend_port }}"
+          _frontend_port: "{{ frontend_port }}"
     backend:
       hosts:
-        backend_host:
-          backend_port: "{{ backend_port }}"
-          db_private_ip: "{{ db_ip }}"
-          db_port: "{{ db_port }}"
-          folder: "back_folder"
+        backend_host1:
+          _db_private_ip: "{{ vm3_private_ip }}"
+          _db_port: "{{ db_port }}"
+          _backend_port: "{{ backend_port }}"
+          folder: "jedynczka"
     database:
       hosts:
         db_host:

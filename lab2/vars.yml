@@ -9,13 +9,9 @@ backend_vm_size: "Standard_B2s"
 db_vm_size: "Standard_DS1_v2"
 username: "azureuser"
 password: "Haslo123Haslo123"
-frontend_port: 4200
 frontend_private_ip: "10.0.4.7"
-backend_port: 9966
 backend_private_ip: "10.0.4.8"
-db_port: 3306
 db_private_ip: "10.0.4.9"
-db_slave_port: 3307
 db_slave_private_ip: "10.0.4.10"
 ssh_port: 22
 network_addr_prefix: "10.0.0.0/16"
@@ -31,6 +27,6 @@ db_public_ip: "Static"
 network_interface_name: "nsg_interface"
 nsg_name: "nsg"
 ansible_password: "Haslo123Haslo123"
-frontend_ip: "20.215.243.54"
-backend_ip: "20.215.243.254"
-db_ip: "20.215.241.71"
+frontend_ip: "20.215.254.41"
+backend_ip: "20.215.255.104"
+db_ip: "20.215.253.229"

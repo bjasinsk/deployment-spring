@@ -29,8 +29,13 @@ pip install --upgrade ansible
 ansible-galaxy collection install azure.azcollection --force
 ansible-galaxy collection install azure.azcollection --upgrade
 
+# setup ends
 
+#deploy machines
 ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
 
-# ansible-playbook configs/config4.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+
+# deploy app
+
 ansible-playbook -i configs/config4.yml deploy.yml
+#ansible-playbook -i configs/config1.yml deploy.yml

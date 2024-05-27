@@ -13,4 +13,4 @@ npm install --save-dev @angular/cli@latest
 npm install angular-http-server
 cd spring-petclinic-angular/
 npm install
-echo n | ng serve --host 0.0.0.0 --port "$1"
+echo n | ng serve --host 0.0.0.0 --port "$1" 
