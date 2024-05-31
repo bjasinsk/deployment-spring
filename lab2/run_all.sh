@@ -1,5 +1,8 @@
 #!/bin/bash
 
+python3 -m venv .venv
+source .venv/bin/activate
+
 sudo apt update
 sudo apt install python3-pip -y
 pip install ansible azure-mgmt-resource msrest msrestazure azure-common --upgrade
@@ -32,10 +35,10 @@ ansible-galaxy collection install azure.azcollection --upgrade
 # setup ends
 
 #deploy machines
-ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
+#ansible-playbook create_all_vms.yml --extra-vars "azureuser=$AZURE_VM_USERNAME azurepassword=$AZURE_VM_PASSWORD"
 
 
 # deploy app
 
-ansible-playbook -i configs/config4.yml deploy.yml
+# ansible-playbook -i configs/config4.yml deploy.yml
 #ansible-playbook -i configs/config1.yml deploy.yml
