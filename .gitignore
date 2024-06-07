@@ -1,2 +1,4 @@
 myenv
 .venv
+get_helm.sh
+spring-petclinic-cloud
