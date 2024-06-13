@@ -1,5 +1,22 @@
 #!/bin/bash
 
+RESOURCE_GROUP="configLab3Z1"
+CLUSTER_NAME="clusterLab3"
+
+az group create --name $RESOURCE_GROUP --location polandcentral
+
+az aks create --resource-group $RESOURCE_GROUP \
+    --name $CLUSTER_NAME \
+    --enable-managed-identity \
+    --node-count 2 \
+    --generate-ssh-keys
+
+az aks get-credentials \
+    --resource-group $RESOURCE_GROUP \
+    --name $CLUSTER_NAME
+
+kubectl get nodes
+
 cd spring-petclinic-cloud/
 
 kubectl apply -f k8s/init-namespace
